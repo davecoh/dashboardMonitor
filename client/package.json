@@ -1,0 +1,88 @@
+{
+  "name": "dashbaordMonitor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"tsc -w\" \"webpack serve --stats-error-details --mode development --env environment=local\"",
+    "tsc": "tsc",
+    "build": "webpack --mode production --env environment=prod analyzerMode=static",
+    "prettier": "prettier --write",
+    "lint": "eslint src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "7.20.2",
+    "@babel/preset-react": "7.18.6",
+    "@babel/preset-typescript": "^7.0.0",
+    "@emotion/eslint-plugin": "^11.10.0",
+    "@svgr/webpack": "^8.0.1",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-dev-server": "^4.7.2",
+    "babel-loader": "^8.3.0",
+    "babel-plugin-emotion": "^10.0.23",
+    "babel-plugin-react-generate-property": "^1.1.2",
+    "concurrently": "^7.5.0",
+    "core-js": "^3.22.5",
+    "css-loader": "^3.2.0",
+    "emotion-theming": "^11.0.0",
+    "eslint": "^8.33.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-webpack-plugin": "4.0.0",
+    "file-loader": "^5.1.0",
+    "html-webpack-plugin": "^5.3.2",
+    "husky": "^4.3.0",
+    "image-webpack-loader": "^8.1.0",
+    "lint-staged": "^10.5.1",
+    "prettier": "^2.1.2",
+    "prop-types": "^15.7.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "style-loader": "^1.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4",
+    "webpack": "^5.47.1",
+    "webpack-bundle-analyzer": "^4.6.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.17.8",
+    "@datadog/browser-rum": "^4.21.2",
+    "@emotion/css": "11.10.6",
+    "@emotion/react": "11.10.6",
+    "@emotion/styled": "11.10.6",
+    "@svgr/webpack": "^8.0.1",
+    "html-react-parser": "^4.2.0",
+    "libphonenumber-js": "^1.7.57",
+    "react-content-loader": "^6.2.1",
+    "react-router-dom": "^5.3.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --max-warnings 0",
+      "npm run prettier",
+      "git add"
+    ]
+  },
+  "engines": {
+    "npm": ">=8",
+    "node": ">=14"
+  }
+}

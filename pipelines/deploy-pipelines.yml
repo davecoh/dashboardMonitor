@@ -1,0 +1,59 @@
+# this pipe line used to select environment to deploy a specific version
+# download the selected version from S3
+# upload the version to the selected environment to S3
+
+# we want to trigger this only manually
+pr:
+  - none
+
+trigger:
+  - none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  cloudFrontDistribution: ''
+  cloudFrontInvalidationProjectPath: '/dashboardMonitor/'
+
+parameters:
+  - name: tcpVersion
+    displayName: TCP Version
+    type: string
+    default: latest
+  - name: environment
+    displayName: Environment
+    type: string
+    default: qa
+    values:
+      - qa
+      - prod  
+
+
+steps:
+
+- task: S3Download@1
+  inputs:
+    awsCredentials: ''
+    regionName: ''
+    bucketName: ''
+    sourceFolder: ''
+    globExpressions: '**/*.*'
+    targetFolder: '$(PIPELINE.WORKSPACE)/temp'
+
+- task: S3Upload@1
+  inputs:
+    awsCredentials: ''
+    regionName: ''
+    bucketName: ''
+    sourceFolder: '$(PIPELINE.WORKSPACE)/temp/dashboardMonitor/${{ parameters.dashboardMonitorVersion }}'
+    globExpressions: '**/*.*'
+    targetFolder: 'dashboardMonitor/${{ parameters.environment }}'
+    filesAcl: 'public-read'
+- task: AWSCLI@1
+  inputs:
+    awsCredentials: ''
+    regionName: ''
+    awsCommand: 'cloudfront'
+    awsSubCommand: 'create-invalidation'
+    awsArguments: '--distribution-id $(cloudFrontDistribution) --paths "/dashboardMonitor/${{parameters.environment}}/*"'

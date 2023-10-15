@@ -1,0 +1,77 @@
+name: '$(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)'
+
+trigger:
+- master
+
+pr:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  npmRepository: ''
+  BRANCH_NAME: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
+
+steps:
+- task: UseNode@1
+  inputs:
+    version: '18.x'
+
+- task: Npm@1
+  displayName: 'Install npm 8.x'
+  inputs:
+    command: 'custom'
+    workingDir: 'client'
+    customCommand: 'install -g npm@8.x'
+
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: 'client'
+
+- task: Npm@1
+  displayName: 'Static type checking'
+  inputs:
+    command: 'custom'
+    workingDir: 'client'
+    customCommand: 'run tsc'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: 'client'
+    customCommand: 'run build'
+
+- task: CmdLine@2
+  displayName: 'Remove index.html'
+  inputs:
+    script: |
+      del sdk\dist\index.html
+
+- task: CmdLine@2
+  displayName: 'Write version file'
+  inputs:
+    script: 'echo $(Build.BuildNumber) ($(BRANCH_NAME)) > client\dist\version.txt'
+
+- task: S3Upload@1
+  condition: and(succeeded(),notIn(variables['Build.Reason'], 'PullRequest', 'CheckInShelveset'))
+  inputs:
+    awsCredentials: ''
+    regionName: ''
+    bucketName: ''
+    sourceFolder: ''
+    globExpressions: '**'
+    targetFolder: 'dashboardMonitor/$(Build.BuildNumber)'
+    filesAcl: 'public-read'
+
+- task: S3Upload@1
+  condition: and(succeeded(),notIn(variables['Build.Reason'], 'PullRequest', 'CheckInShelveset'))
+  inputs:
+    awsCredentials: ''
+    regionName: ''
+    bucketName: ''
+    sourceFolder: ''
+    globExpressions: '**'
+    targetFolder: ''
+    filesAcl: 'public-read'
